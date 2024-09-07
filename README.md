@@ -21,3 +21,8 @@ No diretório raiz do projeto, execute o seguinte comando para instalar as depen
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Como autenticar
+
+Complete o .env com seu nome de usuário e um App Password criado Settings -> Advanced -> App Passwords
