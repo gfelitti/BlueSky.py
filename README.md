@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 Complete o .env com seu nome de usuário e um App Password criado Settings -> Advanced -> App Passwords
 
-### Como usar
+## Como usar
 
 No terminal, rode main.py com o nome do usuário cujos posts você quer extrair.
 
