@@ -5,31 +5,74 @@ from dotenv import load_dotenv
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-def get_token():
-    token = os.getenv("BLUESKY_APP_TOKEN")
-
-    # Se o token não estiver definido, tenta autenticar usando o username e password
-    if not token:
-        token = authenticate_bluesky()
-        # Você pode optar por armazenar o token no .env ou em outro lugar após a primeira autenticação
-        print("Token gerado, por favor, adicione o seguinte ao seu arquivo .env:")
-        print(f"BLUESKY_APP_TOKEN={token}")
-    return token
-
-def authenticate_bluesky():
-    username = os.getenv("BLUESKY_APP_USER")
-    password = os.getenv("BLUESKY_APP_PASS")
-
-    if not username or not password:
-        raise ValueError("Variáveis de ambiente BLUESKY_APP_USER e BLUESKY_APP_PASS devem ser definidas.")
-
+def authenticate_bluesky(username, password):
+    """
+    Função para autenticar-se no Bluesky e obter o token.
+    
+    Args:
+    - username: Nome de usuário do Bluesky.
+    - password: Senha do Bluesky.
+    
+    Retorna:
+    - Token de autenticação.
+    """
     url = "https://bsky.social/xrpc/com.atproto.server.createSession"
     response = requests.post(
         url,
-        json={"identifier": username, "password": password}
+        json={
+            "identifier": username,
+            "password": password
+        }
     )
     
     if response.status_code != 200:
-        raise ValueError("Erro ao tentar fazer login no Bluesky. Verifique suas credenciais.")
+        raise Exception("Erro ao tentar fazer login no Bluesky. Verifique suas credenciais.")
     
-    return response.json()['accessJwt']  # Retorna o token de autenticação
+    data = response.json()
+    token = data.get('accessJwt')
+    
+    if not token:
+        raise Exception("Falha ao obter o token de autenticação.")
+    
+    print("Autenticação realizada com sucesso.")
+    
+    # Opcional: Salvar o token no ambiente ou arquivo temporário
+    os.environ["BLUESKY_ACCESS_TOKEN"] = token
+    
+    return token
+
+def get_token():
+    """
+    Função para obter o token de autenticação do Bluesky.
+    Se o token expirar, refaz a autenticação.
+    
+    Retorna:
+    - Token de autenticação válido.
+    """
+    token = os.getenv("BLUESKY_ACCESS_TOKEN")
+    if token:
+        return token
+    
+    # Refaça a autenticação se o token não estiver disponível ou expirado
+    username = os.getenv("BLUESKY_APP_USER")
+    password = os.getenv("BLUESKY_APP_PASS")
+    
+    if not username or not password:
+        raise Exception("As credenciais do Bluesky não estão configuradas.")
+    
+    return authenticate_bluesky(username, password)
+
+def handle_token_expiration(response, username, password):
+    """
+    Verifica se a resposta da API indica token expirado e refaz a autenticação.
+    
+    Args:
+    - response: Resposta da API.
+    
+    Retorna:
+    - Token de autenticação renovado se o token estiver expirado.
+    """
+    if response.status_code == 401:  # Verifica se o token está expirado
+        print("Token expirado. Reautenticando...")
+        return authenticate_bluesky(username, password)
+    return None

@@ -4,7 +4,7 @@ from data_extraction import get_profile_data, get_all_posts, search_posts
 from data_conversion import convert_profile_to_df, convert_posts_to_df, convert_search_to_df
 from data_saving import save_data_to_csv, save_search_data_to_csv
 
-def extract_profile_data(username, token, full):
+def extract_profile_data(username, token):
     """
     Função para extrair dados de um perfil e suas postagens.
     
@@ -24,7 +24,7 @@ def extract_profile_data(username, token, full):
         posts_df = convert_posts_to_df(posts_data)
         
         # Salvar os dados em CSV
-        save_data_to_csv(profile_df, posts_df, username, full)
+        save_data_to_csv(profile_df, posts_df, username)
     else:
         print(f"Erro ao obter perfil ou posts para o perfil: {username}")
 
@@ -83,11 +83,11 @@ if __name__ == "__main__":
     )
 
     # Argumento opcional para salvar o nome de usuário completo
-    parser.add_argument(
-        "-f", "--full",
-        action="store_true",
-        help="Salva o nome completo do usuário."
-    )
+    #parser.add_argument(
+     #   "-f", "--full",
+      #  action="store_true",
+       # help="Salva o nome completo do usuário."
+    #)
 
     # Parseia os argumentos passados na linha de comando
     args = parser.parse_args()
@@ -100,9 +100,10 @@ if __name__ == "__main__":
     
     # Escolher o modo de operação: perfil ou busca
     if args.mode == "profile":
+        print(args.identifier)
         extract_profile_data(args.identifier, token)
     elif args.mode == "search":
         extract_search_data(
             args.identifier, token, args.sort, args.limit)
     if args.verbose:
-        print(f"Finalizado o processo para o usuário: {args.username}")
+        print(f"Finalizado o processo para o usuário: {args.identifier}")

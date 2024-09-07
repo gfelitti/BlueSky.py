@@ -1,4 +1,5 @@
 import requests
+from authentication import handle_token_expiration, get_token
 
 def get_profile_data(username, token):
     """
@@ -14,6 +15,12 @@ def get_profile_data(username, token):
     url = f"https://bsky.social/xrpc/app.bsky.actor.getProfile?actor={username}"
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(url, headers=headers)
+    
+    # Verificar se o token expirou e reautenticar
+    if response.status_code == 401:
+        token = handle_token_expiration(response, os.getenv("BLUESKY_APP_USER"), os.getenv("BLUESKY_APP_PASS"))
+        headers = {"Authorization": f"Bearer {token}"}
+        response = requests.get(url, headers=headers)
     
     if response.status_code < 200 or response.status_code >= 300:
         print(f"Erro ao obter perfil: {response.status_code}")
