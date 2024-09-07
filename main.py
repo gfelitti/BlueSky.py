@@ -28,7 +28,7 @@ def extract_profile_data(username, token):
     else:
         print(f"Erro ao obter perfil ou posts para o perfil: {username}")
 
-def extract_search_data(query, token, sort, limit, since, until, mentions, author, lang, domain, url, tag):
+def extract_search_data(query, token, sort, limit):
     """
     Função para extrair dados de busca com base nos parâmetros fornecidos.
     
@@ -73,14 +73,7 @@ if __name__ == "__main__":
     # Parâmetros opcionais para o modo 'search'
     parser.add_argument("--sort", type=str, choices=["top", "latest"], default="latest", help="Ordenação dos resultados da busca (top ou latest).")
     parser.add_argument("--limit", type=int, default=25, help="Limite de resultados por página (padrão: 25).")
-    parser.add_argument("--since", type=str, help="Filtrar resultados após esta data.")
-    parser.add_argument("--until", type=str, help="Filtrar resultados antes desta data.")
-    parser.add_argument("--mentions", type=str, help="Filtrar posts que mencionam este usuário.")
-    parser.add_argument("--author", type=str, help="Filtrar posts deste autor.")
-    parser.add_argument("--lang", type=str, help="Filtrar posts neste idioma.")
-    parser.add_argument("--domain", type=str, help="Filtrar posts com links para este domínio.")
-    parser.add_argument("--url", type=str, help="Filtrar posts com links para este URL.")
-    parser.add_argument("--tag", type=str, help="Filtrar posts com esta hashtag.")
+
     
     # Argumento opcional para modo verboso
     parser.add_argument(
@@ -110,14 +103,6 @@ if __name__ == "__main__":
         extract_profile_data(args.identifier, token)
     elif args.mode == "search":
         extract_search_data(
-            args.identifier, token, args.sort, args.limit, args.since, args.until, 
-            args.mentions, args.author, args.lang, args.domain, args.url, args.tag
-        )
-    
-    if args.verbose:
-        print(f"Iniciando a coleta de dados para o usuário: {args.username}")
-    
-    main(args.username, args.full)
-    
+            args.identifier, token, args.sort, args.limit)
     if args.verbose:
         print(f"Finalizado o processo para o usuário: {args.username}")
