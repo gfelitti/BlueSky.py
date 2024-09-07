@@ -4,7 +4,7 @@ from data_extraction import get_profile_data, get_all_posts, search_posts
 from data_conversion import convert_profile_to_df, convert_posts_to_df, convert_search_to_df
 from data_saving import save_data_to_csv, save_search_data_to_csv
 
-def extract_profile_data(username, token):
+def extract_profile_data(username, token, full):
     """
     Função para extrair dados de um perfil e suas postagens.
     
