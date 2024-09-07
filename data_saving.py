@@ -2,8 +2,8 @@ import os
 import pandas as pd
 from datetime import datetime
 
-def save_data_to_csv(profile_df, posts_df, username):
-    simple_username = username.split(".")[0]
+def save_data_to_csv(profile_df, posts_df, username, full):
+    simple_username = username if full else username.split(".")[0]
     current_date = datetime.now().strftime("%Y_%m_%d")
     
     # Certificar-se de que o diretório 'data' existe
